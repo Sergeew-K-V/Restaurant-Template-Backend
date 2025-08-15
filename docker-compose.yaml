@@ -1,0 +1,15 @@
+services:
+  postgres-db:
+    container_name: postgres-db
+    image: postgres:16-alpine # Using a lightweight PostgreSQL image
+    environment:
+      POSTGRES_DB: go-postgres # The name of the database to create
+      POSTGRES_USER: admin # The username for the database
+      POSTGRES_PASSWORD: admin # The password for the database user
+    ports:
+      - "8888:5432" # Maps host port 8888 to container port 5432
+    volumes:
+      - go_db_data:/var/lib/postgresql/data # Persists database data
+
+volumes:
+  go_db_data: # Defines the named volume for database data persistence

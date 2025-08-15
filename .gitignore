@@ -1,0 +1,8 @@
+# ... existing code ...
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# ... existing code ...
