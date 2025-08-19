@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"restaurant-backend/src/config"
+
 	_ "github.com/lib/pq"
 )
 
@@ -26,13 +28,11 @@ func NewDBConfig() *DBConfig {
 	}
 }
 
-func GetDBConnection(c *DBConfig) (*sql.DB, error) {
+func GetDBConnection(c *config.DBConfig) (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		c.Host, c.Port, c.User, c.Password, c.DBName)
-	fmt.Println("POSTGRESSQL INFO:", psqlInfo)
 
 	db, err := sql.Open("postgres", psqlInfo)
-	fmt.Println("GetDBConnection db:", db)
 
 	if err != nil {
 		return nil, fmt.Errorf("error opening connection to DB: %v", err)

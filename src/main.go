@@ -5,29 +5,37 @@ import (
 	"log"
 	"net/http"
 	"restaurant-backend/src/config"
-	"restaurant-backend/src/controllers"
 	"restaurant-backend/src/database"
+	"restaurant-backend/src/routes"
 	"strconv"
+
+	"github.com/rs/cors"
 )
 
 func main() {
-	cfg := config.LoadGlobalConfig()
+	envConfig := config.LoadGlobalConfig()
 
-	fmt.Printf("Server started on %d port \n", cfg.App.Port)
-	portStr := ":" + strconv.Itoa(cfg.App.Port)
-
-	http.HandleFunc("/", controllers.RegisterUser)
-
-	config := database.NewDBConfig()
-
-	db, err := database.GetDBConnection(config)
-
+	db, err := database.GetDBConnection(envConfig.DB)
 	if err != nil {
 		log.Fatal("Error connecting to DB:", err)
 	}
 	defer database.CloseDB(db)
 
-	fmt.Printf("db %v \n", db)
+	mux := http.NewServeMux()
+	fmt.Printf("Server started on %d port \n", envConfig.App.Port)
 
-	log.Fatal(http.ListenAndServe(portStr, nil))
+	routes.AuthRoutes(mux, db)
+
+	// CORS configuration using github.com/rs/cors
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	})
+
+	server := c.Handler(mux)
+	portStr := ":" + strconv.Itoa(envConfig.App.Port)
+
+	log.Fatal(http.ListenAndServe(portStr, server))
 }
