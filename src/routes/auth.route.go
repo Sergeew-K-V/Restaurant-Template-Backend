@@ -11,5 +11,5 @@ func AuthRoutes(server *http.ServeMux, db *sql.DB) {
 
 	server.HandleFunc("/api/auth/register", authController.RegisterUser)
 
-	server.HandleFunc("/api/auth/login", controllers.LoginUser)
+	server.HandleFunc("/api/auth/login", authController.LoginUser)
 }

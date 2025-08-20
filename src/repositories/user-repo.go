@@ -72,3 +72,22 @@ func (ur *UserRepository) UserExists(email string) (bool, error) {
 
 	return exists, nil
 }
+
+func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
+	query := `SELECT * FROM users WHERE email = $1`
+
+	user := &models.User{}
+
+	err := ur.db.QueryRow(query, email).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		log.Printf("ERROR: Failed to get user by email: %v", err)
+		return nil, fmt.Errorf("error getting user by email: %v", err)
+	}
+
+	return user, nil
+}
