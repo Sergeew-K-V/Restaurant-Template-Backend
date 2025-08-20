@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"restaurant-backend/src/models"
 	"restaurant-backend/src/repositories"
 	"restaurant-backend/src/utils"
 	"strings"
+	"time"
 )
 
 type AuthController struct {
@@ -101,6 +103,20 @@ func (ac *AuthController) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	tokenData := fmt.Sprintf("%s:%d:%s", user.Id.String(), time.Now().Unix(), os.Getenv("COOKIE_SECRET_KEY"))
+
+	hashedToken := utils.HashString(tokenData)
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "dashboard-cookie",
+		Value:    hashedToken,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   86400 * 7,
+	})
 
 	response := models.RegisterResponse{
 		Success: true,
