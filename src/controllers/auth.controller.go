@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"restaurant-backend/src/models"
 	"restaurant-backend/src/repositories"
 	"restaurant-backend/src/utils"
@@ -15,11 +13,13 @@ import (
 
 type AuthController struct {
 	userRepo *repositories.UserRepository
+	ctx      *models.AppContext
 }
 
-func NewAuthController(db *sql.DB) *AuthController {
+func NewAuthController(ctx *models.AppContext) *AuthController {
 	return &AuthController{
-		userRepo: repositories.NewUserRepository(db),
+		userRepo: repositories.NewUserRepository(ctx.DB),
+		ctx:      ctx,
 	}
 }
 
@@ -103,7 +103,7 @@ func (ac *AuthController) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenData := fmt.Sprintf("%s:%d:%s", user.Id.String(), time.Now().Unix(), os.Getenv("COOKIE_SECRET_KEY"))
+	tokenData := fmt.Sprintf("%s:%d:%s", user.Id.String(), time.Now().Unix(), ac.ctx.Config.App.CookieSecretKey)
 
 	hashedToken := utils.HashString(tokenData)
 
@@ -203,7 +203,7 @@ func (ac *AuthController) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenData := fmt.Sprintf("%s:%d:%s", existedUser.Id.String(), time.Now().Unix(), os.Getenv("COOKIE_SECRET_KEY"))
+	tokenData := fmt.Sprintf("%s:%d:%s", existedUser.Id.String(), time.Now().Unix(), ac.ctx.Config.App.CookieSecretKey)
 
 	hashedToken := utils.HashString(tokenData)
 

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"restaurant-backend/src/config"
 	"restaurant-backend/src/database"
+	"restaurant-backend/src/models"
 	"restaurant-backend/src/routes"
 	"strconv"
 
@@ -13,18 +14,23 @@ import (
 )
 
 func main() {
+	var AppContext models.AppContext
 	envConfig := config.LoadGlobalConfig()
 
 	db, err := database.GetDBConnection(envConfig.DB)
+
+	AppContext.Config = envConfig
+	AppContext.DB = db
 	if err != nil {
 		log.Fatal("Error connecting to DB:", err)
 	}
 	defer database.CloseDB(db)
 
 	mux := http.NewServeMux()
+	AppContext.Mux = mux
 	fmt.Printf("Server started on %d port \n", envConfig.App.Port)
 
-	routes.AuthRoutes(mux, db)
+	routes.AuthRoutes(&AppContext)
 
 	// CORS configuration using github.com/rs/cors
 	c := cors.New(cors.Options{

@@ -1,15 +1,14 @@
 package routes
 
 import (
-	"database/sql"
-	"net/http"
 	"restaurant-backend/src/controllers"
+	"restaurant-backend/src/models"
 )
 
-func AuthRoutes(server *http.ServeMux, db *sql.DB) {
-	authController := controllers.NewAuthController(db)
+func AuthRoutes(context *models.AppContext) {
+	authController := controllers.NewAuthController(context)
 
-	server.HandleFunc("/api/auth/register", authController.RegisterUser)
+	context.Mux.HandleFunc("/api/auth/register", authController.RegisterUser)
 
-	server.HandleFunc("/api/auth/login", authController.LoginUser)
+	context.Mux.HandleFunc("/api/auth/login", authController.LoginUser)
 }
