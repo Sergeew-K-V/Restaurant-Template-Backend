@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"restaurant-backend/src/models"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,11 +13,20 @@ type UserRepository struct {
 	db *sql.DB
 }
 
+type User struct {
+	Id        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name"`
+	Password  string    `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (ur *UserRepository) CreateUser(user *models.User) error {
+func (ur *UserRepository) CreateUser(user *User) error {
 	user.Id = uuid.New()
 
 	query := `
@@ -40,10 +48,10 @@ func (ur *UserRepository) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (ur *UserRepository) GetUserById(id string) (*models.User, error) {
+func (ur *UserRepository) GetUserById(id string) (*User, error) {
 	query := `SELECT id, name, email, password, created_at, updated_at FROM users WHERE email = $1`
 
-	user := &models.User{}
+	user := &User{}
 
 	err := ur.db.QueryRow(query, id).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
@@ -73,10 +81,10 @@ func (ur *UserRepository) UserExists(email string) (bool, error) {
 	return exists, nil
 }
 
-func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
+func (ur *UserRepository) GetUserByEmail(email string) (*User, error) {
 	query := `SELECT * FROM users WHERE email = $1`
 
-	user := &models.User{}
+	user := &User{}
 
 	err := ur.db.QueryRow(query, email).Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
 
