@@ -58,8 +58,8 @@ func main() {
 	router.RegistryPublicRoute(ctx, "/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		authService.LoginUser(ctx, w, r)
 	})
-	router.RegistryPrivateRoute(ctx, "/me", func(w http.ResponseWriter, r *http.Request) {
-		authService.Me(ctx, w, r)
+	router.RegistryPrivateRoute(ctx, "/profile/", func(w http.ResponseWriter, r *http.Request) {
+		authService.Profile(ctx, w, r)
 	})
 
 	portStr := ":" + strconv.Itoa(envConfig.App.Port)

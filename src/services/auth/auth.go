@@ -14,5 +14,5 @@ type AuthService struct {
 type AuthServiceInterface interface {
 	RegisterUser(ctx context.Context, w http.ResponseWriter, r *http.Request)
 	LoginUser(ctx context.Context, w http.ResponseWriter, r *http.Request)
-	Me(ctx context.Context, w http.ResponseWriter, r *http.Request)
+	Profile(ctx context.Context, w http.ResponseWriter, r *http.Request)
 }

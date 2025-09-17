@@ -49,7 +49,7 @@ func (ur *UserRepository) CreateUser(user *User) error {
 }
 
 func (ur *UserRepository) GetUserById(id string) (*User, error) {
-	query := `SELECT id, name, email, password, created_at, updated_at FROM users WHERE email = $1`
+	query := `SELECT id, name, email, password, created_at, updated_at FROM users WHERE id = $1`
 
 	user := &User{}
 
